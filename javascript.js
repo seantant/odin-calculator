@@ -19,21 +19,26 @@ let b = '';
 let operatorSymbol = '';
 
 function operate(operator, a, b) {
-    if (operator === '+') {
+    if (operator == '+') {
         return add(+a, +b);
     }
-    else if (operator === '-') {
+    else if (operator == '-') {
         return subtract(+a, +b);
     }
-    else if (operator === '*') {
+    else if (operator == '*') {
         return multiply(+a, +b);
     }
-    else if (operator === '/' && +b === 0) {
+    else if (operator == '/' && +b == 0) {
         return "don't divide by zero";
     }
-    else if (operator === '/') {
+    else if (operator == '/') {
         return divide(+a, +b);
     }
+}
+
+function clearDisplay() {
+    const display = document.querySelector("#display");
+    display.textContent = '';
 }
 
 // Number buttons
@@ -41,8 +46,13 @@ function operate(operator, a, b) {
 function pressDigit(digit) {
     const display = document.querySelector("#display");
 
-    if (display.textContent.length < 10) {
-        display.textContent += digit;
+    if (operatorSymbol == '' && a.length < 10) {
+        a += digit;
+        display.textContent = a;
+    }
+    else if (operatorSymbol != '' && b.length < 10) {
+        b += digit;
+        display.textContent = b;
     }
 }
 
@@ -53,15 +63,21 @@ for (let i = 0; i < 10; i++) {
 
 // Operator buttons
 
+function chainOperator() {
+    const display = document.querySelector("#display");
+    a = operate(operatorSymbol, a, b);
+    display.textContent = a;
+    b = '';
+}
+
 function pressOperator(operator) {
-    if (operatorSymbol != '') {
-        pressEnter();
+    if (a == '') {
+        return;
+    }
+    if (operatorSymbol != '' && b != '') {
+        chainOperator();
     }
     operatorSymbol = operator;
-
-    const display = document.querySelector("#display");
-    a = display.textContent;
-    display.textContent = '';
 }
 
 const addButton = document.querySelector("#add");
@@ -77,12 +93,14 @@ divideButton.addEventListener("click", function func(e) {pressOperator('/')});
 // Enter button
 
 function pressEnter() {
+    if (a == '' || b == '' || operatorSymbol == '') {
+        return;
+    }
 
     const display = document.querySelector("#display");
-    b = display.textContent;
-    a = operate(operatorSymbol, a, b);
-    display.textContent = a;
+    display.textContent = operate(operatorSymbol, a, b);
 
+    a = '';
     operatorSymbol = '';
     b = '';
 }
